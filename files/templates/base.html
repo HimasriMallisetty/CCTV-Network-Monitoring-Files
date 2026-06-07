@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}SecureVision{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --cream:      #FAF8F4;
+      --parchment:  #F3EFE7;
+      --gold:       #C9A84C;
+      --gold-lt:    #E8D5A3;
+      --gold-dk:    #8B6914;
+      --gold-glow:  rgba(201,168,76,.18);
+      --onyx:       #141414;
+      --charcoal:   #2E2E2E;
+      --slate:      #6B6B6B;
+      --mist:       #D4CFC5;
+      --white:      #FFFFFF;
+      --danger:     #C0392B;
+      --danger-lt:  rgba(192,57,43,.12);
+      --success:    #2E7D52;
+      --success-lt: rgba(46,125,82,.12);
+      --shadow-sm:  0 2px 12px rgba(0,0,0,.05);
+      --shadow-md:  0 6px 30px rgba(0,0,0,.10);
+      --shadow-lg:  0 16px 60px rgba(0,0,0,.14);
+      --radius:     3px;
+      --radius-lg:  8px;
+      --sidebar-w:  248px;
+      --transition: all .26s cubic-bezier(.4,0,.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      color: var(--onyx);
+      min-height: 100vh;
+      font-size: 14.5px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* ── Sidebar ─────────────────────────────── */
+    .sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      width: var(--sidebar-w);
+      background: var(--onyx);
+      display: flex; flex-direction: column;
+      z-index: 200;
+      border-right: 1px solid rgba(201,168,76,.12);
+    }
+
+    .sidebar-brand {
+      padding: 32px 26px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .sidebar-brand .logo-mark {
+      display: flex; align-items: center; gap: 11px;
+    }
+    .sidebar-brand .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: var(--onyx);
+      box-shadow: 0 4px 14px rgba(201,168,76,.35);
+    }
+    .sidebar-brand .logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 21px; font-weight: 600;
+      color: var(--white); letter-spacing: .04em;
+    }
+    .sidebar-brand .logo-sub {
+      font-size: 9.5px; color: var(--gold);
+      letter-spacing: .20em; text-transform: uppercase;
+      margin-top: 5px; padding-left: 47px;
+    }
+
+    .sidebar-nav { flex: 1; padding: 16px 0; overflow-y: auto; }
+    .sidebar-nav::-webkit-scrollbar { width: 0; }
+
+    .nav-section-label {
+      font-size: 9px; letter-spacing: .26em;
+      text-transform: uppercase; color: rgba(255,255,255,.25);
+      padding: 16px 26px 6px;
+    }
+
+    .nav-link {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 26px;
+      color: rgba(255,255,255,.50);
+      text-decoration: none;
+      font-size: 13px; font-weight: 400;
+      letter-spacing: .025em;
+      transition: var(--transition);
+      position: relative;
+      border-radius: 0;
+    }
+    .nav-link .nav-icon {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      font-size: 12.5px;
+      background: rgba(255,255,255,.04);
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .nav-link:hover { color: var(--white); }
+    .nav-link:hover .nav-icon { background: rgba(201,168,76,.15); color: var(--gold); }
+    .nav-link.active { color: var(--gold); }
+    .nav-link.active .nav-icon { background: rgba(201,168,76,.18); color: var(--gold); }
+    .nav-link.active::before {
+      content: '';
+      position: absolute; left: 0; top: 8px; bottom: 8px;
+      width: 2px; background: var(--gold);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--danger);
+      color: #fff; font-size: 9px; font-weight: 700;
+      padding: 2px 6px; border-radius: 10px;
+      letter-spacing: .04em;
+    }
+
+    .sidebar-footer {
+      padding: 18px 26px;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .user-badge {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .user-avatar {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--onyx); font-weight: 700;
+      flex-shrink: 0;
+    }
+    .user-name { font-size: 13px; color: rgba(255,255,255,.75); font-weight: 500; }
+    .user-role { font-size: 10px; color: var(--gold); letter-spacing: .10em; text-transform: uppercase; }
+
+    /* ── Main content ────────────────────────── */
+    .main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+    }
+
+    .topbar {
+      height: 62px;
+      background: var(--white);
+      border-bottom: 1px solid var(--mist);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 36px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-left h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 23px; font-weight: 500;
+      color: var(--onyx); letter-spacing: .02em;
+    }
+    .topbar-left .breadcrumb {
+      font-size: 10.5px; color: var(--slate);
+      letter-spacing: .10em; text-transform: uppercase;
+      margin-bottom: 1px;
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 18px; }
+
+    .topbar-btn {
+      width: 36px; height: 36px;
+      border: 1px solid var(--mist); border-radius: var(--radius);
+      background: transparent; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: var(--slate);
+      transition: var(--transition);
+    }
+    .topbar-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+    .status-pill {
+      display: flex; align-items: center; gap: 7px;
+      background: var(--success-lt);
+      border: 1px solid rgba(46,125,82,.2);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 11.5px; color: var(--success); font-weight: 500;
+    }
+    .status-pill .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 7px var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.35} }
+
+    .page-content { flex: 1; padding: 32px 36px; }
+
+    /* ── Cards ───────────────────────────────── */
+    .card {
+      background: var(--white);
+      border: 1px solid var(--mist);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .card:hover { box-shadow: var(--shadow-md); }
+    .card-header {
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid var(--parchment);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(to right, rgba(250,248,244,.6), var(--white));
+    }
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px; font-weight: 500;
+      color: var(--onyx); letter-spacing: .02em;
+    }
+    .card-body { padding: 22px; }
+
+    /* ── Buttons ─────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 9px 20px;
+      font-family: 'Jost', sans-serif;
+      font-size: 12px; font-weight: 500;
+      letter-spacing: .08em; text-transform: uppercase;
+      border: none; border-radius: var(--radius);
+      cursor: pointer; text-decoration: none;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+    .btn-gold { background: var(--gold); color: var(--onyx); }
+    .btn-gold:hover { background: var(--gold-dk); color: var(--white); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(201,168,76,.3); }
+    .btn-outline { background: transparent; border: 1px solid var(--mist); color: var(--charcoal); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); background: var(--gold-glow); }
+    .btn-danger { background: var(--danger); color: var(--white); }
+    .btn-danger:hover { background: #a93226; transform: translateY(-1px); }
+    .btn-success { background: var(--success); color: var(--white); }
+    .btn-success:hover { background: #256644; transform: translateY(-1px); }
+    .btn-sm { padding: 6px 13px; font-size: 10.5px; }
+    .btn-xs { padding: 4px 10px; font-size: 10px; }
+
+    /* ── Grid ────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 18px; }
+
+    /* ── Alert toast ─────────────────────────── */
+    .toast-container {
+      position: fixed; top: 76px; right: 22px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 9px;
+    }
+    .toast {
+      background: var(--white);
+      border-left: 3px solid var(--gold);
+      border-radius: var(--radius-lg);
+      padding: 13px 16px;
+      min-width: 270px; max-width: 330px;
+      box-shadow: var(--shadow-lg);
+      animation: slideIn .28s ease;
+      font-size: 13px;
+    }
+    .toast.danger { border-left-color: var(--danger); }
+    .toast.success { border-left-color: var(--success); }
+    .toast.warning { border-left-color: #E67E22; }
+    .toast-title { font-weight: 600; font-size: 12px; letter-spacing: .04em; margin-bottom: 2px; }
+    @keyframes slideIn {
+      from { transform: translateX(80px); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+
+    /* ── Form elements ───────────────────────── */
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: block;
+      font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--slate); margin-bottom: 6px; font-weight: 500;
+    }
+    .form-control {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1px solid var(--mist);
+      border-radius: var(--radius);
+      font-family: 'Jost', sans-serif;
+      font-size: 14px; color: var(--onyx);
+      background: var(--white);
+      transition: var(--transition);
+    }
+    .form-control:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,.10); }
+    select.form-control { cursor: pointer; }
+
+    /* ── Badge ───────────────────────────────── */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 10px; letter-spacing: .06em; font-weight: 500;
+    }
+    .badge-gold    { background: rgba(201,168,76,.14); color: var(--gold-dk); }
+    .badge-success { background: var(--success-lt);    color: var(--success); }
+    .badge-danger  { background: var(--danger-lt);     color: var(--danger); }
+    .badge-slate   { background: rgba(107,107,107,.10); color: var(--slate); }
+
+    /* ── Gold divider ────────────────────────── */
+    .gold-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-lt), transparent);
+      margin: 22px 0;
+    }
+
+    /* ── Scrollbar ───────────────────────────── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--mist); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--gold-lt); }
+
+    /* ── Loading bar ─────────────────────────── */
+    #loading-bar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), var(--gold-dk), var(--gold));
+      z-index: 9999;
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .4s ease;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body data-user-logged-in="{{ 'true' if session.user else 'false' }}">
+
+<div id="loading-bar"></div>
+<div class="toast-container" id="toastContainer"></div>
+
+{% if session.user %}
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="logo-mark">
+      <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
+      <span class="logo-text">SecureVision</span>
+    </div>
+    <div class="logo-sub">Intelligence Platform</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Operations</div>
+    <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint=='dashboard' %}active{% endif %}">
+      <span class="nav-icon"><i class="fas fa-grid-2"></i></span> Dashboard
+    </a>
+    <a href="{{ url_for('dashboard') }}" onclick="setTimeout(()=>activateDetection('crowd'),200)" class="nav-link {% if active_detection=='crowd' %}active{% endif %}">
+      <span class="nav-icon"><i class="fas fa-users"></i></span> Crowd Control
+    </a>
+    <a href="{{ url_for('dashboard') }}" onclick="setTimeout(()=>activateDetection('weapon'),200)" class="nav-link {% if active_detection=='weapon' %}active{% endif %}">
+      <span class="nav-icon"><i class="fas fa-gun"></i></span> Weapon Detection
+    </a>
+
+    <div class="nav-section-label">System</div>
+    <a href="{{ url_for('settings') }}" class="nav-link {% if request.endpoint=='settings' %}active{% endif %}">
+      <span class="nav-icon"><i class="fas fa-sliders"></i></span> Settings
+    </a>
+    <a href="{{ url_for('logs') }}" class="nav-link {% if request.endpoint=='logs' %}active{% endif %}">
+      <span class="nav-icon"><i class="fas fa-list-ul"></i></span> Event Logs
+    </a>
+    <a href="{{ url_for('about') }}" class="nav-link {% if request.endpoint=='about' %}active{% endif %}">
+      <span class="nav-icon"><i class="fas fa-circle-info"></i></span> About
+    </a>
+
+    <div class="nav-section-label">Account</div>
+    <a href="{{ url_for('logout') }}" class="nav-link" style="color:rgba(192,57,43,.65)">
+      <span class="nav-icon" style="background:rgba(192,57,43,.08);"><i class="fas fa-right-from-bracket" style="color:var(--danger)"></i></span> Sign Out
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="user-avatar">A</div>
+      <div>
+        <div class="user-name">Administrator</div>
+        <div class="user-role">Full Access</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="breadcrumb">SecureVision / {% block breadcrumb %}Overview{% endblock %}</div>
+      <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill"><div class="dot"></div> System Online</div>
+    </div>
+  </div>
+
+  <div class="page-content">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+{% else %}
+  {% block auth_content %}{% endblock %}
+{% endif %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+<script>
+  function showToast(title, message, type='info') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<div class="toast-title">${title}</div><div style="color:var(--slate);font-size:12.5px;">${message}</div>`;
+    c.appendChild(t);
+    setTimeout(() => {
+      t.style.opacity = '0';
+      t.style.transform = 'translateX(60px)';
+      t.style.transition = 'all .3s ease';
+      setTimeout(() => t.remove(), 300);
+    }, 4500);
+  }
+
+  let socket;
+  if (document.body.getAttribute('data-user-logged-in') === 'true') {
+    socket = io();
+    socket.on('detection_alert', d => {
+      const icons = { crowd:'👥', weapon:'⚠️', error:'❌' };
+      const types = { crowd:'warning', weapon:'danger', error:'danger' };
+      showToast(`${icons[d.type]||'🔔'} ${(d.type||'Alert').toUpperCase()}`, d.message, types[d.type]||'info');
+    });
+  }
+
+  function activateDetection(mode) {
+    if (typeof activate === 'function') activate(mode);
+  }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

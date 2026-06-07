@@ -1,0 +1,10 @@
+flask
+flask-socketio
+paho-mqtt
+pygame
+opencv-python
+ultralytics
+torch
+torchvision
+numpy
+eventlet

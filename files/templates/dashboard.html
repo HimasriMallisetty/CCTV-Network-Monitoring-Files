@@ -1,0 +1,761 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SecureVision{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block page_title %}Command Dashboard{% endblock %}
+
+{% block extra_head %}
+<style>
+  .stat-card {
+    background:var(--white); border:1px solid var(--mist);
+    border-radius:var(--radius-lg); padding:22px 20px;
+    position:relative; overflow:hidden;
+    transition:var(--transition); box-shadow:var(--shadow-sm);
+  }
+  .stat-card::after {
+    content:''; position:absolute; top:-20px; right:-20px;
+    width:90px; height:90px; border-radius:50%;
+    background:radial-gradient(circle,rgba(201,168,76,.09),transparent 70%);
+    pointer-events:none;
+  }
+  .stat-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+  .stat-icon {
+    width:40px; height:40px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; margin-bottom:14px;
+    background:rgba(201,168,76,.10); color:var(--gold);
+  }
+  .stat-icon.danger  { background:var(--danger-lt);  color:var(--danger); }
+  .stat-icon.success { background:var(--success-lt); color:var(--success); }
+  .stat-val { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:500; color:var(--onyx); line-height:1; }
+  .stat-label { font-size:10.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--slate); margin-top:5px; }
+
+  /* ── Video panel ── */
+  .video-wrap {
+    background:#0d0d0d; border-radius:var(--radius-lg);
+    overflow:hidden; position:relative; aspect-ratio:16/9;
+  }
+  .video-wrap img { width:100%;height:100%;object-fit:cover;display:block; }
+  #videoPlayerWrap { display:none; position:absolute; inset:0; z-index:3; }
+  #videoPlayerWrap video { width:100%;height:100%;object-fit:cover;background:#000; }
+
+  .stream-badge {
+    position:absolute; top:11px; left:11px; z-index:10;
+    background:var(--danger); color:#fff;
+    font-size:9.5px; font-weight:700; letter-spacing:.14em;
+    padding:3px 10px; border-radius:100px;
+    display:flex; align-items:center; gap:5px; text-transform:uppercase;
+  }
+  .stream-badge .dot { width:6px;height:6px;border-radius:50%;background:#fff;animation:pulseFast 1s infinite; }
+  @keyframes pulseFast{0%,100%{opacity:1}50%{opacity:.2}}
+
+  .mode-badge {
+    position:absolute; top:11px; right:11px; z-index:10;
+    background:rgba(0,0,0,.62); color:var(--gold-lt);
+    font-size:11px; padding:4px 12px; border-radius:100px;
+    backdrop-filter:blur(4px);
+  }
+  .video-overlay-info {
+    position:absolute; bottom:0; left:0; right:0; z-index:10;
+    background:linear-gradient(transparent,rgba(0,0,0,.52));
+    padding:22px 14px 10px;
+    display:flex; align-items:flex-end; justify-content:space-between;
+  }
+  .feed-type-label { font-size:11px; color:rgba(255,255,255,.5); letter-spacing:.08em; text-transform:uppercase; }
+
+  /* Placeholder */
+  .cam-placeholder {
+    position:absolute; inset:0; display:flex;
+    flex-direction:column; align-items:center; justify-content:center;
+    background:#0d0d0d; color:rgba(255,255,255,.28);
+    font-size:13px; gap:14px; z-index:2; text-align:center; padding:20px;
+  }
+  .cam-placeholder i { font-size:42px; color:rgba(255,255,255,.08); }
+  .cam-placeholder .start-cam-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(201,168,76,.15); border:1px solid rgba(201,168,76,.35);
+    color:var(--gold-lt); padding:9px 20px; border-radius:100px;
+    font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    cursor:pointer; transition:all .25s ease;
+  }
+  .cam-placeholder .start-cam-btn:hover {
+    background:rgba(201,168,76,.28); border-color:var(--gold); color:var(--gold);
+  }
+
+  /* Detection buttons */
+  .det-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .det-btn {
+    border:1px solid var(--mist); border-radius:var(--radius-lg);
+    padding:18px 16px; background:var(--white); cursor:pointer;
+    transition:var(--transition); text-align:left; position:relative; overflow:hidden;
+  }
+  .det-btn::before {
+    content:''; position:absolute; left:0; top:0; bottom:0;
+    width:3px; background:var(--mist); transition:var(--transition);
+  }
+  .det-btn:hover { border-color:var(--gold); box-shadow:var(--shadow-md); }
+  .det-btn:hover::before,.det-btn.active::before { background:var(--gold); }
+  .det-btn.active { background:rgba(201,168,76,.04); border-color:var(--gold); }
+  .det-btn-icon  { font-size:22px; margin-bottom:8px; display:block; }
+  .det-btn-title { font-family:'Cormorant Garamond',serif; font-size:15px; color:var(--onyx); margin-bottom:3px; }
+  .det-btn-desc  { font-size:11.5px; color:var(--slate); line-height:1.4; }
+  .det-btn-status{ margin-top:10px; font-size:10px; letter-spacing:.06em; font-weight:500; color:var(--slate); }
+  .det-btn.active .det-btn-status { color:var(--gold); }
+
+  /* Alert feed */
+  .alert-item { display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--parchment);font-size:13px; }
+  .alert-item:last-child { border-bottom:none; }
+  .alert-dot { width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0; }
+  .alert-dot.warn   { background:#E67E22; }
+  .alert-dot.info   { background:var(--gold); }
+  .alert-dot.ok     { background:var(--success); }
+  .alert-dot.danger { background:var(--danger); }
+  .alert-time { font-size:10.5px;color:var(--slate);margin-top:2px; }
+
+  /* Upload zone */
+  .upload-zone {
+    border:2px dashed var(--mist); border-radius:var(--radius-lg);
+    padding:22px; text-align:center; cursor:pointer; transition:var(--transition);
+  }
+  .upload-zone:hover,.upload-zone.drag { border-color:var(--gold); background:rgba(201,168,76,.03); }
+  .upload-zone i { font-size:26px;color:var(--mist);margin-bottom:8px;display:block; }
+  .upload-zone p { font-size:13px;color:var(--slate); }
+  .upload-zone strong { color:var(--gold); }
+
+  .video-file-item {
+    display:flex;align-items:center;justify-content:space-between;
+    padding:9px 12px; border:1px solid var(--mist); border-radius:var(--radius-lg);
+    margin-bottom:7px; font-size:13px; background:var(--white); transition:var(--transition);
+  }
+  .video-file-item:hover { border-color:var(--gold-lt); background:rgba(201,168,76,.02); }
+  .video-file-item .name { display:flex;align-items:center;gap:8px;color:var(--charcoal); }
+  .video-file-item .del { background:none;border:none;color:var(--slate);cursor:pointer;transition:var(--transition);font-size:13px;padding:4px; }
+  .video-file-item .del:hover { color:var(--danger); }
+
+  .config-row { display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--parchment);font-size:13px; }
+  .config-row:last-child { border-bottom:none; }
+  .config-key { font-size:10.5px;letter-spacing:.10em;text-transform:uppercase;color:var(--slate); }
+
+  /* Audio mute toggle */
+  .audio-toggle {
+    display:inline-flex; align-items:center; gap:6px;
+    background:transparent; border:1px solid var(--mist);
+    border-radius:100px; padding:5px 12px;
+    font-size:11px; color:var(--slate); cursor:pointer;
+    transition:var(--transition);
+  }
+  .audio-toggle:hover { border-color:var(--gold); color:var(--gold); }
+  .audio-toggle.muted { border-color:var(--danger); color:var(--danger); }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hidden audio elements for browser-side alert sounds -->
+<audio id="audio-crowd"  src="/static/audio/crowd_alert.mp3"  preload="auto"></audio>
+<audio id="audio-weapon" src="/static/audio/weapon_alert.mp3" preload="auto"></audio>
+<audio id="audio-alarm"  src="/static/audio/alarm.mp3"        preload="auto"></audio>
+
+<!-- Stats -->
+<div class="grid-4" style="margin-bottom:24px;">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-camera"></i></div>
+    <div class="stat-val">1</div>
+    <div class="stat-label">Camera Active</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fas fa-radar"></i></div>
+    <div class="stat-val">2</div>
+    <div class="stat-label">Detection Modules</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon danger"><i class="fas fa-bell"></i></div>
+    <div class="stat-val" id="alertCount">0</div>
+    <div class="stat-label">Alerts This Session</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon success"><i class="fas fa-signal"></i></div>
+    <div class="stat-val" style="font-size:24px;" id="modeLabel">{{ mode | title }}</div>
+    <div class="stat-label">Feed Mode</div>
+  </div>
+</div>
+
+<!-- Main grid -->
+<div class="grid-2" style="gap:22px;align-items:start;">
+
+  <!-- LEFT -->
+  <div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <span class="card-title">Live Feed</span>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="audio-toggle" id="audioToggleBtn" onclick="toggleAudio()" title="Toggle alert sounds">
+            <i class="fas fa-volume-high" id="audioIcon"></i> <span id="audioLabel">Sound On</span>
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="toggleFeed()" title="Switch between annotated detection view and plain camera">
+            <i class="fas fa-layer-group"></i> <span id="feedToggleLabel">Raw</span>
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="stopDetection()">
+            <i class="fas fa-stop"></i> Stop
+          </button>
+        </div>
+      </div>
+      <div style="padding:10px;">
+        <div class="video-wrap" id="videoWrap">
+
+          <!-- Placeholder shown when camera is off -->
+          <div class="cam-placeholder" id="camPlaceholder">
+            <i class="fas fa-video-slash"></i>
+            <div>Camera not started — activate a module or preview the webcam</div>
+            <button class="start-cam-btn" onclick="startCameraPreview()">
+              <i class="fas fa-play"></i> Start Camera Preview
+            </button>
+          </div>
+
+          <!-- MJPEG stream -->
+          <img id="streamImg" src="" alt="Detection feed"
+               style="width:100%;height:100%;object-fit:cover;display:none;"/>
+
+          <!-- Video file player -->
+          <div id="videoPlayerWrap">
+            <video id="videoPlayer" controls>
+              Your browser does not support video.
+            </video>
+          </div>
+
+          <div class="stream-badge" id="streamBadge" style="display:none;">
+            <div class="dot"></div> Live
+          </div>
+          <div class="mode-badge" id="activeModeLabel">
+            {% if active_mode %}{{ active_mode | title }} Active{% else %}No Detection{% endif %}
+          </div>
+          <div class="video-overlay-info">
+            <span class="feed-type-label" id="feedTypeLabel">Camera Off</span>
+          </div>
+        </div>
+
+        <!-- Feed explanation -->
+        <div style="margin-top:10px;padding:10px 14px;background:var(--parchment);border-radius:var(--radius-lg);font-size:12px;color:var(--slate);display:flex;gap:8px;align-items:flex-start;">
+          <i class="fas fa-circle-info" style="color:var(--gold);margin-top:2px;flex-shrink:0;"></i>
+          <span>
+            <strong style="color:var(--charcoal);">Annotated</strong> = camera with detection boxes &nbsp;|&nbsp;
+            <strong style="color:var(--charcoal);">Raw</strong> = plain camera stream. Toggle button switches between them.
+            Alert sounds play in your browser when a detection event fires.
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detection modules -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Detection Modules</span>
+        <span class="badge badge-gold">One at a time</span>
+      </div>
+      <div class="card-body" style="padding:16px;">
+        <div class="det-grid">
+          <button class="det-btn {% if active_mode=='crowd' %}active{% endif %}" id="btn-crowd" onclick="activate('crowd')">
+            <span class="det-btn-icon">👥</span>
+            <div class="det-btn-title">Crowd Control</div>
+            <div class="det-btn-desc">YOLOv8 person counting with configurable alert threshold.</div>
+            <div class="det-btn-status" id="status-crowd">
+              {% if active_mode=='crowd' %}● Running{% else %}○ Idle{% endif %}
+            </div>
+          </button>
+          <button class="det-btn {% if active_mode=='weapon' %}active{% endif %}" id="btn-weapon" onclick="activate('weapon')">
+            <span class="det-btn-icon">⚠️</span>
+            <div class="det-btn-title">Weapon Detection</div>
+            <div class="det-btn-desc">Haar Cascade classifier for firearm identification.</div>
+            <div class="det-btn-status" id="status-weapon">
+              {% if active_mode=='weapon' %}● Running{% else %}○ Idle{% endif %}
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div>
+    <!-- Alert feed -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <span class="card-title">Alert Feed</span>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('alertList').innerHTML=''">
+          <i class="fas fa-broom"></i> Clear
+        </button>
+      </div>
+      <div style="padding:0 22px;max-height:200px;overflow-y:auto;">
+        <div id="alertList">
+          <div class="alert-item">
+            <div class="alert-dot ok"></div>
+            <div><div>System ready. All modules idle.</div><div class="alert-time">Now</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video library -->
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <span class="card-title">Video Library</span>
+        <span class="badge badge-gold">{{ videos | length }} file(s)</span>
+      </div>
+      <div class="card-body">
+        <div class="upload-zone" id="uploadZone"
+             ondragover="event.preventDefault();this.classList.add('drag')"
+             ondragleave="this.classList.remove('drag')"
+             ondrop="handleDrop(event)"
+             onclick="document.getElementById('fileInput').click()">
+          <i class="fas fa-cloud-arrow-up"></i>
+          <p>Drag & drop or <strong>click to upload</strong></p>
+          <p style="font-size:11px;margin-top:3px;">MP4, AVI, MOV, MKV, WEBM</p>
+        </div>
+        <input type="file" id="fileInput" accept=".mp4,.avi,.mov,.mkv,.webm"
+               style="display:none" onchange="uploadFile(this.files[0])"/>
+        <div id="uploadProgress" style="display:none;margin-top:10px;">
+          <div style="background:var(--parchment);border-radius:2px;height:3px;overflow:hidden;">
+            <div id="progressBar" style="height:100%;background:var(--gold);width:0%;transition:width .3s;"></div>
+          </div>
+          <div style="font-size:11px;color:var(--slate);margin-top:4px;" id="uploadStatus">Uploading…</div>
+        </div>
+        <div style="margin-top:14px;" id="fileList">
+          {% for v in videos %}
+          <div class="video-file-item" id="file-{{ v }}">
+            <div class="name"><i class="fas fa-film" style="color:var(--gold);"></i> {{ v }}</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <button class="btn btn-outline btn-xs" onclick="previewVideo('{{ v }}')"><i class="fas fa-eye"></i></button>
+              <button class="btn btn-outline btn-xs" onclick="runOnVideo('{{ v }}')"><i class="fas fa-radar"></i> Analyse</button>
+              <button class="del" onclick="deleteVideo('{{ v }}')"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          {% else %}
+          <div style="font-size:13px;color:var(--slate);text-align:center;padding:14px 0;" id="noFilesMsg">
+            No videos uploaded yet.
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Config -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Configuration</span>
+        <a href="{{ url_for('settings') }}" class="btn btn-outline btn-sm"><i class="fas fa-pen"></i> Edit</a>
+      </div>
+      <div class="card-body" style="padding:16px 22px;">
+        <div class="config-row">
+          <span class="config-key">Mode</span>
+          <span class="badge {% if mode=='live' %}badge-success{% else %}badge-gold{% endif %}">{{ mode | title }}</span>
+        </div>
+        <div class="config-row">
+          <span class="config-key">Camera</span>
+          <span class="badge badge-success">Webcam (index 0)</span>
+        </div>
+        <div class="config-row">
+          <span class="config-key">Crowd Threshold</span>
+          <strong style="font-size:13px;">{{ config.crowd_threshold }} person(s)</strong>
+        </div>
+        <div class="config-row">
+          <span class="config-key">Active Module</span>
+          <span id="configActiveModule" class="badge badge-slate">
+            {% if active_mode %}{{ active_mode | title }}{% else %}None{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analyse modal -->
+<div id="analyseModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;">
+  <div style="background:var(--white);border-radius:var(--radius-lg);padding:28px;min-width:340px;max-width:420px;box-shadow:var(--shadow-lg);">
+    <h3 style="font-family:'Cormorant Garamond',serif;font-size:21px;margin-bottom:8px;">Analyse Video</h3>
+    <p style="font-size:13px;color:var(--slate);margin-bottom:18px;">Choose detection mode for <strong id="analyseFileName"></strong>:</p>
+    <div style="display:flex;flex-direction:column;gap:8px;" id="analyseButtons"></div>
+    <button class="btn btn-outline" style="margin-top:14px;width:100%;justify-content:center;" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let alertCount       = 0;
+let currentFeed      = 'annotated';   // 'raw' | 'annotated'
+let feedSource       = 'off';         // 'off' | 'webcam' | 'video'
+let pendingVideoFile = null;
+let audioMuted       = false;
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  AUDIO — plays in browser (server emits 'audio' field in detection_alert)
+// ═══════════════════════════════════════════════════════════════════════════
+const audioElements = {
+  crowd:  document.getElementById('audio-crowd'),
+  weapon: document.getElementById('audio-weapon'),
+  alarm:  document.getElementById('audio-alarm'),
+};
+
+function playAlertSound(key) {
+  if (audioMuted) return;
+  const el = audioElements[key];
+  if (!el) return;
+  el.currentTime = 0;
+  el.play().catch(e => console.warn('[Audio] Play blocked:', e));
+}
+
+function toggleAudio() {
+  audioMuted = !audioMuted;
+  const btn   = document.getElementById('audioToggleBtn');
+  const icon  = document.getElementById('audioIcon');
+  const label = document.getElementById('audioLabel');
+  if (audioMuted) {
+    btn.classList.add('muted');
+    icon.className  = 'fas fa-volume-xmark';
+    label.textContent = 'Muted';
+  } else {
+    btn.classList.remove('muted');
+    icon.className  = 'fas fa-volume-high';
+    label.textContent = 'Sound On';
+  }
+}
+
+// Unlock audio on first user interaction (browser autoplay policy)
+document.addEventListener('click', function unlockAudio() {
+  Object.values(audioElements).forEach(el => {
+    if (el) { el.play().then(() => el.pause()).catch(() => {}); }
+  });
+  document.removeEventListener('click', unlockAudio);
+}, { once: true });
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  SOCKET ALERTS
+// ═══════════════════════════════════════════════════════════════════════════
+if (typeof socket !== 'undefined' && socket) {
+  socket.on('detection_alert', d => {
+    addAlert(d.type, d.message);
+    if (d.audio) playAlertSound(d.audio);
+  });
+}
+
+function addAlert(type, message) {
+  alertCount++;
+  document.getElementById('alertCount').textContent = alertCount;
+  const dotMap = { crowd:'warn', weapon:'danger', error:'danger' };
+  const now  = new Date().toLocaleTimeString();
+  const list = document.getElementById('alertList');
+  const item = document.createElement('div');
+  item.className = 'alert-item';
+  item.innerHTML = `<div class="alert-dot ${dotMap[type]||'info'}"></div>
+    <div><div style="font-weight:500;">${message}</div><div class="alert-time">${now}</div></div>`;
+  list.insertBefore(item, list.firstChild);
+  while (list.children.length > 40) list.removeChild(list.lastChild);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  FEED HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+function setFeedSrc(endpoint) {
+  const img = document.getElementById('streamImg');
+  img.src = endpoint + '?t=' + Date.now();
+}
+
+function showCamFeed() {
+  document.getElementById('camPlaceholder').style.display  = 'none';
+  document.getElementById('streamImg').style.display       = 'block';
+  document.getElementById('streamBadge').style.display     = 'flex';
+  document.getElementById('videoPlayerWrap').style.display = 'none';
+  feedSource = 'webcam';
+}
+
+function showCamPlaceholder() {
+  document.getElementById('camPlaceholder').style.display  = 'flex';
+  document.getElementById('streamImg').style.display       = 'none';
+  document.getElementById('streamBadge').style.display     = 'none';
+  document.getElementById('videoPlayerWrap').style.display = 'none';
+  document.getElementById('feedTypeLabel').textContent     = 'Camera Off';
+  feedSource = 'off';
+}
+
+function showVideoPlayer(filename) {
+  document.getElementById('camPlaceholder').style.display  = 'none';
+  document.getElementById('streamImg').style.display       = 'none';
+  document.getElementById('streamBadge').style.display     = 'none';
+  const wrap = document.getElementById('videoPlayerWrap');
+  const vid  = document.getElementById('videoPlayer');
+  vid.src = '/static/videos/' + encodeURIComponent(filename);
+  vid.load();
+  vid.play().catch(() => {});
+  wrap.style.display = 'block';
+  document.getElementById('feedTypeLabel').textContent = 'Preview: ' + filename;
+  feedSource = 'video';
+}
+
+function returnToWebcam() {
+  const isActive = document.querySelector('.det-btn.active') !== null;
+  const endpoint = isActive ? '/video_feed/annotated' : '/video_feed';
+  // Stop any playing video
+  const vid = document.getElementById('videoPlayer');
+  vid.pause(); vid.src = '';
+  setFeedSrc(endpoint);
+  showCamFeed();
+  currentFeed = isActive ? 'annotated' : 'raw';
+  document.getElementById('feedTypeLabel').textContent   = isActive ? 'Annotated Feed' : 'Raw Feed';
+  document.getElementById('feedToggleLabel').textContent  = isActive ? 'Raw' : 'Annotated';
+}
+
+// ── Start camera preview (no detection) ──────────────────────────────────────
+async function startCameraPreview() {
+  document.getElementById('feedTypeLabel').textContent = 'Starting camera…';
+  try {
+    await fetch('/api/start_camera', {method:'POST'});
+    setTimeout(() => {
+      setFeedSrc('/video_feed');
+      showCamFeed();
+      currentFeed = 'raw';
+      document.getElementById('feedTypeLabel').textContent  = 'Raw Feed';
+      document.getElementById('feedToggleLabel').textContent = 'Annotated';
+      document.getElementById('activeModeLabel').textContent = 'No Detection';
+    }, 1200);   // give camera 1.2s to init
+  } catch(e) {
+    showToast('❌ Error', 'Could not start camera.', 'danger');
+  }
+}
+
+// ── Toggle raw ↔ annotated ────────────────────────────────────────────────────
+function toggleFeed() {
+  if (feedSource === 'off') { startCameraPreview(); return; }
+  if (feedSource === 'video') { returnToWebcam(); return; }
+  if (currentFeed === 'annotated') {
+    currentFeed = 'raw';
+    setFeedSrc('/video_feed');
+    document.getElementById('feedToggleLabel').textContent = 'Annotated';
+    document.getElementById('feedTypeLabel').textContent   = 'Raw Feed';
+  } else {
+    currentFeed = 'annotated';
+    setFeedSrc('/video_feed/annotated');
+    document.getElementById('feedToggleLabel').textContent = 'Raw';
+    document.getElementById('feedTypeLabel').textContent   = 'Annotated Feed';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ACTIVATE / STOP DETECTION
+// ═══════════════════════════════════════════════════════════════════════════
+async function activate(mode) {
+  // Reset all buttons
+  ['crowd','weapon'].forEach(m => {
+    document.getElementById('btn-'+m).classList.remove('active');
+    document.getElementById('status-'+m).textContent = '○ Idle';
+    document.getElementById('status-'+m).style.color = 'var(--slate)';
+  });
+  document.getElementById('btn-'+mode).classList.add('active');
+  document.getElementById('status-'+mode).textContent = '⏳ Starting…';
+  document.getElementById('activeModeLabel').textContent = mode.charAt(0).toUpperCase()+mode.slice(1)+' Starting…';
+  document.getElementById('configActiveModule').textContent = mode.charAt(0).toUpperCase()+mode.slice(1);
+
+  // Show the MJPEG stream immediately (it will show "activate…" placeholder until frames arrive)
+  if (feedSource !== 'video') {
+    setFeedSrc('/video_feed/annotated');
+    showCamFeed();
+    currentFeed = 'annotated';
+    document.getElementById('feedTypeLabel').textContent  = 'Starting…';
+    document.getElementById('feedToggleLabel').textContent = 'Raw';
+  }
+
+  try {
+    const r = await fetch('/api/start_detection', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({mode})
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('status-'+mode).textContent = '● Running';
+      document.getElementById('status-'+mode).style.color = 'var(--gold)';
+      document.getElementById('activeModeLabel').textContent = mode.charAt(0).toUpperCase()+mode.slice(1)+' Active';
+      document.getElementById('feedTypeLabel').textContent   = 'Annotated Feed';
+      showToast('✅ Active', d.message, 'success');
+      // Refresh stream src after backend warms up
+      setTimeout(() => {
+        if (feedSource !== 'video') setFeedSrc('/video_feed/annotated');
+      }, 1500);
+    } else {
+      showToast('❌ Error', d.message, 'danger');
+      document.getElementById('status-'+mode).textContent = '✗ Failed';
+      document.getElementById('btn-'+mode).classList.remove('active');
+    }
+  } catch(e) {
+    showToast('❌ Error', 'Request failed.', 'danger');
+  }
+}
+
+async function stopDetection() {
+  await fetch('/api/stop_detection', {method:'POST'});
+  ['crowd','weapon'].forEach(m => {
+    document.getElementById('btn-'+m).classList.remove('active');
+    document.getElementById('status-'+m).textContent = '○ Idle';
+    document.getElementById('status-'+m).style.color = 'var(--slate)';
+  });
+  document.getElementById('activeModeLabel').textContent  = 'No Detection';
+  document.getElementById('configActiveModule').textContent = 'None';
+  showCamPlaceholder();
+  showToast('⏹ Stopped', 'Detection stopped. Camera released.', 'info');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  UPLOAD
+// ═══════════════════════════════════════════════════════════════════════════
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  if (e.dataTransfer.files[0]) uploadFile(e.dataTransfer.files[0]);
+}
+
+async function uploadFile(file) {
+  if (!file) return;
+  document.getElementById('uploadProgress').style.display = 'block';
+  document.getElementById('progressBar').style.width = '30%';
+  document.getElementById('uploadStatus').textContent = `Uploading ${file.name}…`;
+  const fd = new FormData(); fd.append('video', file);
+  try {
+    const r = await fetch('/upload_video', {method:'POST', body:fd});
+    const d = await r.json();
+    document.getElementById('progressBar').style.width = '100%';
+    if (d.success) {
+      document.getElementById('uploadStatus').textContent = `✓ ${d.filename} uploaded`;
+      addFileToList(d.filename);
+      showToast('✅ Uploaded', d.filename, 'success');
+    } else {
+      document.getElementById('uploadStatus').textContent = `✗ ${d.error}`;
+      showToast('❌ Error', d.error, 'danger');
+    }
+  } catch(e) { document.getElementById('uploadStatus').textContent = 'Upload failed.'; }
+  setTimeout(() => document.getElementById('uploadProgress').style.display='none', 3000);
+}
+
+function addFileToList(name) {
+  const noMsg = document.getElementById('noFilesMsg');
+  if (noMsg) noMsg.remove();
+  const list = document.getElementById('fileList');
+  const div = document.createElement('div');
+  div.className = 'video-file-item'; div.id = 'file-'+name;
+  div.innerHTML = `
+    <div class="name"><i class="fas fa-film" style="color:var(--gold);"></i> ${name}</div>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <button class="btn btn-outline btn-xs" onclick="previewVideo('${name}')"><i class="fas fa-eye"></i></button>
+      <button class="btn btn-outline btn-xs" onclick="runOnVideo('${name}')"><i class="fas fa-radar"></i> Analyse</button>
+      <button class="del" onclick="deleteVideo('${name}')"><i class="fas fa-trash"></i></button>
+    </div>`;
+  list.appendChild(div);
+}
+
+// Preview only — no detection
+function previewVideo(filename) {
+  showVideoPlayer(filename);
+  showToast('▶ Preview', `Playing ${filename}`, 'info');
+}
+
+async function deleteVideo(name) {
+  if (!confirm(`Delete ${name}?`)) return;
+  const r = await fetch('/delete_video', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({filename:name})
+  });
+  const d = await r.json();
+  if (d.success) {
+    const el = document.getElementById('file-'+name);
+    if (el) el.remove();
+    showToast('🗑 Deleted', name);
+    const vidSrc = document.getElementById('videoPlayer').src;
+    if (vidSrc.includes(encodeURIComponent(name))) returnToWebcam();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ANALYSE VIDEO MODAL
+// ═══════════════════════════════════════════════════════════════════════════
+function runOnVideo(filename) {
+  pendingVideoFile = filename;
+  document.getElementById('analyseFileName').textContent = filename;
+  const modes = [
+    {mode:'crowd',  icon:'👥', label:'Crowd Control'},
+    {mode:'weapon', icon:'⚠️', label:'Weapon Detection'},
+  ];
+  document.getElementById('analyseButtons').innerHTML = modes.map(m =>
+    `<button class="btn btn-outline" style="width:100%;justify-content:center;" onclick="startVideoAnalysis('${m.mode}')">
+      ${m.icon} ${m.label}</button>`).join('');
+  document.getElementById('analyseModal').style.display = 'flex';
+}
+
+async function startVideoAnalysis(mode) {
+  const filename = pendingVideoFile;  // capture BEFORE closeModal() nulls it
+  closeModal();
+
+  // Step 1: Tell backend which video file to use
+  const setRes = await fetch('/api/set_video_source', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({filename})
+  });
+  const setData = await setRes.json();
+  if (!setData.success) {
+    showToast('❌ Error', setData.error || 'Could not set video source.', 'danger');
+    return;
+  }
+
+  // Step 2: Show video player FIRST so user sees it playing
+  showVideoPlayer(filename);
+
+  // Step 3: Update button state manually (don't call activate() — it would switch away from video)
+  ['crowd','weapon'].forEach(m => {
+    document.getElementById('btn-'+m).classList.remove('active');
+    document.getElementById('status-'+m).textContent = '○ Idle';
+    document.getElementById('status-'+m).style.color = 'var(--slate)';
+  });
+  document.getElementById('btn-'+mode).classList.add('active');
+  document.getElementById('status-'+mode).textContent = '⏳ Starting…';
+  document.getElementById('activeModeLabel').textContent = mode.charAt(0).toUpperCase()+mode.slice(1)+' Starting…';
+  document.getElementById('configActiveModule').textContent = mode.charAt(0).toUpperCase()+mode.slice(1);
+
+  // Step 4: Start detection on the backend
+  try {
+    const r = await fetch('/api/start_detection', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({mode})
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('status-'+mode).textContent = '● Running';
+      document.getElementById('status-'+mode).style.color = 'var(--gold)';
+      document.getElementById('activeModeLabel').textContent = mode.charAt(0).toUpperCase()+mode.slice(1)+' Active';
+      showToast('▶ Analysing', `Running ${mode} detection on ${filename}`, 'success');
+      // Video player stays visible — detection runs in background
+    } else {
+      showToast('❌ Error', d.message, 'danger');
+      document.getElementById('status-'+mode).textContent = '✗ Failed';
+      document.getElementById('btn-'+mode).classList.remove('active');
+    }
+  } catch(e) {
+    showToast('❌ Error', 'Failed to start analysis.', 'danger');
+  }
+}
+
+function closeModal() {
+  document.getElementById('analyseModal').style.display = 'none';
+  pendingVideoFile = null;
+}
+
+// ── Page load: if detection was already active, show the stream ───────────────
+
+window.addEventListener('load', () => {
+  setFeedSrc('/video_feed/annotated');
+  showCamFeed();
+  currentFeed = 'annotated';
+  document.getElementById('feedTypeLabel').textContent  = 'Annotated Feed';
+  document.getElementById('feedToggleLabel').textContent = 'Raw';
+});
+
+</script>
+{% endblock %}

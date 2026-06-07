@@ -1,0 +1,147 @@
+[2026-03-03 13:49:46] Crowd detection started
+[2026-03-03 13:49:54] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:03] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:11] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:19] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:27] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:35] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:43] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:51] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:50:59] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:51:07] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:51:15] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:51:23] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:51:31] Crowd Alert: 1 person(s) detected!
+[2026-03-03 13:53:59] Settings updated
+[2026-03-03 13:56:25] Detection started: crowd
+[2026-03-03 13:56:50] Crowd detection started
+[2026-03-03 13:58:52] Detection started: crowd
+[2026-03-03 13:58:53] Crowd detection started
+[2026-03-03 13:59:23] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:23] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:31] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:32] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:39] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:40] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:47] Crowd Alert: 2 person(s) detected!
+[2026-03-03 13:59:50] Crowd Alert: 2 person(s) detected!
+[2026-03-03 14:02:58] Settings updated
+[2026-03-03 14:21:17] Video uploaded: test_video.mp4
+[2026-03-03 14:22:26] Detection started: weapon
+[2026-03-03 14:22:27] Weapon detection started
+[2026-03-03 14:22:28] Weapon detected
+[2026-03-03 14:22:33] Weapon detected
+[2026-03-03 14:22:36] Detection started: crowd
+[2026-03-03 14:22:45] Detection started: crowd
+[2026-03-03 14:23:12] Detection started: crowd
+[2026-03-03 14:23:29] Detection started: weapon
+[2026-03-03 14:23:29] Weapon detection started
+[2026-03-03 14:23:30] Weapon detected
+[2026-03-03 14:23:34] Crowd detection started
+[2026-03-03 14:23:35] Crowd detection started
+[2026-03-03 14:23:35] Crowd detection started
+[2026-03-03 14:23:35] Weapon detected
+[2026-03-03 14:23:40] Weapon detected
+[2026-03-03 14:23:45] Weapon detected
+[2026-03-03 14:23:47] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:23:47] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:23:47] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:23:51] Weapon detected
+[2026-03-03 14:23:55] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:23:55] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:23:55] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:23:56] Weapon detected
+[2026-03-03 14:24:01] Detection started: crowd
+[2026-03-03 14:24:01] Crowd detection started
+[2026-03-03 14:24:02] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:24:16] Detection started: crowd
+[2026-03-03 14:24:16] Crowd detection started
+[2026-03-03 14:24:17] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:24:26] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:24:34] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:24:42] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:24:50] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:24:58] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:25:06] Crowd Alert: 1 person(s) detected!
+[2026-03-03 14:25:18] Detection started: weapon
+[2026-03-03 14:25:18] Weapon detection started
+[2026-03-03 14:25:18] Weapon detected
+[2026-03-03 14:25:23] Weapon detected
+[2026-03-03 14:25:28] Weapon detected
+[2026-03-03 14:25:34] Weapon detected
+[2026-03-03 14:25:39] Weapon detected
+[2026-03-03 14:25:44] Weapon detected
+[2026-03-03 14:25:49] Weapon detected
+[2026-03-03 14:25:55] Weapon detected
+[2026-03-03 14:26:00] Weapon detected
+[2026-03-04 10:08:37] Login: admin
+[2026-03-04 10:08:48] Detection started: weapon
+[2026-03-04 10:08:49] Weapon detection started
+[2026-03-04 10:08:52] Weapon detected
+[2026-03-04 10:08:57] Weapon detected
+[2026-03-04 10:09:03] Weapon detected
+[2026-03-04 10:09:07] Weapon detected
+[2026-03-04 10:09:13] Weapon detected
+[2026-03-04 10:09:18] Weapon detected
+[2026-03-04 10:09:27] Detection started: crowd
+[2026-03-04 10:10:13] Crowd detection started
+[2026-03-04 10:10:33] Crowd Alert: 1 person(s) detected!
+[2026-03-04 10:10:41] Crowd Alert: 1 person(s) detected!
+[2026-03-04 10:10:49] Crowd Alert: 1 person(s) detected!
+[2026-03-04 10:13:04] Detection started: crowd
+[2026-03-04 10:13:06] Crowd detection started
+[2026-03-04 10:13:07] Crowd Alert: 1 person(s) detected!
+[2026-03-04 10:13:15] Crowd Alert: 1 person(s) detected!
+[2026-03-04 10:13:33] Settings updated
+[2026-03-04 10:13:41] Detection started: crowd
+[2026-03-04 10:13:41] Crowd detection started
+[2026-03-04 10:13:56] Crowd Alert: 2 person(s) detected!
+[2026-03-04 10:17:02] Detection started: weapon
+[2026-03-04 10:17:02] Weapon detection started
+[2026-03-04 10:17:03] Weapon detected
+[2026-03-04 10:17:14] Detection started: weapon
+[2026-03-04 10:17:14] Weapon detection started
+[2026-03-04 10:17:14] Weapon detected
+[2026-03-04 10:17:19] Weapon detected
+[2026-03-04 10:17:24] Weapon detected
+[2026-03-04 10:17:29] Weapon detected
+[2026-03-04 10:17:34] Weapon detected
+[2026-03-04 10:17:39] Weapon detected
+[2026-03-04 10:17:45] Weapon detected
+[2026-03-04 10:17:50] Weapon detected
+[2026-03-04 10:57:20] Detection started: weapon
+[2026-03-04 10:57:52] Weapon detection started (YOLO mode)
+[2026-03-04 10:58:38] Weapon Detected: knife (67%)
+[2026-03-04 10:58:44] Weapon Detected: knife (75%)
+[2026-03-04 10:59:11] Weapon Detected: knife (76%)
+[2026-03-04 10:59:56] Detection started: weapon
+[2026-03-04 10:59:57] Weapon detection started (YOLO mode)
+[2026-03-04 11:00:26] Weapon Detected: knife (65%)
+[2026-03-04 11:00:33] Weapon Detected: knife (59%)
+[2026-03-04 11:00:41] Weapon Detected: knife (56%)
+[2026-03-04 11:01:32] Weapon Detected: scissors (70%)
+[2026-03-04 11:01:49] Detection started: weapon
+[2026-03-04 11:01:49] Weapon detection started (YOLO mode)
+[2026-03-04 11:02:29] Weapon Detected: scissors (66%)
+[2026-03-04 11:02:38] Weapon Detected: scissors (95%)
+[2026-03-04 11:03:17] Video uploaded: odd_activity.mp4
+[2026-03-04 11:06:00] Detection started: crowd
+[2026-03-04 11:06:26] Crowd detection started
+[2026-03-04 11:06:38] Crowd Alert: 2 person(s) detected!
+[2026-03-04 11:06:48] Crowd Alert: 2 person(s) detected!
+[2026-03-04 11:06:58] Crowd Alert: 2 person(s) detected!
+[2026-03-04 11:07:05] Settings updated
+[2026-03-04 11:07:08] Crowd Alert: 3 person(s) detected!
+[2026-03-04 11:07:18] Crowd Alert: 2 person(s) detected!
+[2026-03-04 11:07:32] Detection started: crowd
+[2026-03-04 11:07:32] Crowd detection started
+[2026-03-04 11:07:33] Crowd Alert: 3 person(s) detected!
+[2026-03-04 11:08:29] Login: admin
+[2026-03-04 11:08:35] Detection started: crowd
+[2026-03-04 11:08:35] Crowd detection started
+[2026-03-04 11:08:36] Crowd Alert: 3 person(s) detected!
+[2026-03-04 11:08:48] Detection started: crowd
+[2026-03-04 11:08:48] Crowd detection started
+[2026-03-04 11:08:59] Detection started: crowd
+[2026-03-04 11:08:59] Crowd detection started
+[2026-03-04 11:08:59] Crowd Alert: 3 person(s) detected!

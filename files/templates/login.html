@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SecureVision — Sign In</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --cream: #FAF8F4; --parchment: #F3EFE7; --gold: #C9A84C;
+      --gold-dk: #8B6914; --onyx: #1A1A1A; --mist: #D4CFC5;
+      --slate: #6B6B6B; --danger: #C0392B;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left panel — decorative */
+    .auth-visual {
+      flex: 0 0 55%;
+      background: var(--onyx);
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+
+    .auth-visual::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 30% 40%, rgba(201,168,76,.18) 0%, transparent 55%),
+        radial-gradient(circle at 75% 70%, rgba(201,168,76,.10) 0%, transparent 45%);
+    }
+
+    /* Animated grid lines */
+    .auth-visual::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,.06) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      0%   { background-position: 0 0; }
+      100% { background-position: 48px 48px; }
+    }
+
+    .visual-content {
+      position: relative; z-index: 2;
+      text-align: center; padding: 60px;
+      max-width: 460px;
+    }
+    .visual-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dk));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px; color: var(--onyx);
+      margin: 0 auto 32px;
+      box-shadow: 0 0 50px rgba(201,168,76,.25);
+    }
+    .visual-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px; font-weight: 300;
+      color: #fff; line-height: 1.15;
+      letter-spacing: .04em; margin-bottom: 16px;
+    }
+    .visual-title span { color: var(--gold); font-style: italic; }
+    .visual-desc {
+      color: rgba(255,255,255,.45);
+      font-size: 14px; line-height: 1.7;
+      letter-spacing: .02em;
+    }
+
+    .visual-features {
+      display: flex; flex-direction: column; gap: 14px;
+      margin-top: 40px; text-align: left;
+    }
+    .feature-item {
+      display: flex; align-items: center; gap: 13px;
+      color: rgba(255,255,255,.6); font-size: 13px;
+    }
+    .feature-item i {
+      color: var(--gold); width: 16px; font-size: 12px;
+    }
+
+    /* Right panel — form */
+    .auth-form-wrap {
+      flex: 1;
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px 48px;
+    }
+
+    .auth-form {
+      width: 100%; max-width: 380px;
+    }
+
+    .form-header { margin-bottom: 40px; }
+    .form-header .back-brand {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 32px;
+    }
+    .form-header .b-icon {
+      width: 28px; height: 28px;
+      background: var(--onyx);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: var(--gold);
+    }
+    .form-header .b-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px; color: var(--onyx); font-weight: 600;
+    }
+
+    .form-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px; font-weight: 400;
+      color: var(--onyx); letter-spacing: .02em;
+      margin-bottom: 6px;
+    }
+    .form-header p {
+      font-size: 13px; color: var(--slate);
+    }
+
+    .gold-line {
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 28px 0;
+    }
+
+    .form-group { margin-bottom: 22px; }
+    .form-label {
+      display: block;
+      font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--slate); margin-bottom: 8px; font-weight: 500;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    .input-wrap i {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: var(--mist); font-size: 13px;
+      transition: color .2s;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1px solid var(--mist);
+      border-radius: 2px;
+      font-family: 'Jost', sans-serif;
+      font-size: 14px; color: var(--onyx);
+      background: #fff;
+      transition: all .25s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201,168,76,.10);
+    }
+    .form-control:focus + i,
+    .input-wrap:focus-within i { color: var(--gold); }
+
+    .error-msg {
+      background: rgba(192,57,43,.07);
+      border-left: 2px solid var(--danger);
+      padding: 10px 14px;
+      border-radius: 2px;
+      font-size: 13px; color: var(--danger);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background: var(--onyx);
+      color: var(--gold);
+      border: none; border-radius: 2px;
+      font-family: 'Jost', sans-serif;
+      font-size: 12px; font-weight: 500;
+      letter-spacing: .14em; text-transform: uppercase;
+      cursor: pointer; transition: all .28s;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .btn-submit:hover {
+      background: var(--gold);
+      color: var(--onyx);
+      box-shadow: 0 6px 24px rgba(201,168,76,.25);
+      transform: translateY(-1px);
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 11.5px; color: var(--slate);
+      margin-top: 24px; letter-spacing: .03em;
+    }
+    .hint code {
+      background: var(--parchment);
+      padding: 2px 6px; border-radius: 2px;
+      font-family: monospace; font-size: 11px;
+      color: var(--gold-dk);
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-visual">
+  <div class="visual-content">
+    <div class="visual-icon"><i class="fas fa-shield-halved"></i></div>
+    <h1 class="visual-title">Intelligent <span>Security</span> at Scale</h1>
+    <p class="visual-desc">AI-powered surveillance with real-time anomaly detection, crowd analytics, and instant alerts.</p>
+    <div class="visual-features">
+      <div class="feature-item"><i class="fas fa-check-circle"></i> YOLOv8 Crowd & Person Detection</div>
+      <div class="feature-item"><i class="fas fa-check-circle"></i> Weapon & Threat Recognition</div>
+      <div class="feature-item"><i class="fas fa-check-circle"></i> Accident & Motion Analysis</div>
+      <div class="feature-item"><i class="fas fa-check-circle"></i> MQTT Real-Time Alerts</div>
+      <div class="feature-item"><i class="fas fa-check-circle"></i> Live Camera & Video Support</div>
+    </div>
+  </div>
+</div>
+
+<div class="auth-form-wrap">
+  <div class="auth-form">
+    <div class="form-header">
+      <div class="back-brand">
+        <div class="b-icon"><i class="fas fa-shield-halved"></i></div>
+        <span class="b-name">SecureVision</span>
+      </div>
+      <h2>Welcome back</h2>
+      <p>Sign in to your command centre</p>
+    </div>
+
+    <div class="gold-line"></div>
+
+    {% if error %}
+    <div class="error-msg"><i class="fas fa-triangle-exclamation"></i> {{ error }}</div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <div class="input-wrap">
+          <input type="text" name="username" class="form-control" placeholder="Enter username" required autocomplete="username"/>
+          <i class="fas fa-user"></i>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="input-wrap">
+          <input type="password" name="password" class="form-control" placeholder="Enter password" required autocomplete="current-password"/>
+          <i class="fas fa-lock"></i>
+        </div>
+      </div>
+      <button type="submit" class="btn-submit">
+        <i class="fas fa-arrow-right-to-bracket"></i> Sign In
+      </button>
+    </form>
+
+    <p class="hint">Default: <code>admin</code> / <code>admin123</code></p>
+  </div>
+</div>
+
+</body>
+</html>

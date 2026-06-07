@@ -1,0 +1,9 @@
+{
+    "detection_mode": "live",
+    "camera_quality": "1080p",
+    "storage_limit": "10",
+    "crowd_threshold": 3,
+    "MQTT_BROKER": "test.mosquitto.org",
+    "MQTT_TOPIC": "crowd/alert",
+    "active_video_file": ""
+}
